@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { Moon, Sun, Menu, X, Mail } from "lucide-react";
+import Link from "next/link";
 
 const GithubIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className ?? "w-3.5 h-3.5"}>
@@ -21,6 +22,7 @@ const navLinks = [
   { name: "Skills",   href: "#skills"   },
   { name: "Projects", href: "#projects" },
   { name: "Life",     href: "#life"     },
+  { name: "Repos",    href: "/repos"    },
 ];
 
 export default function Header() {
@@ -53,6 +55,61 @@ export default function Header() {
   const scrollTo = (href: string) => {
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     setIsMenuOpen(false);
+  };
+
+  // Renders a single nav item — hash links scroll, page routes use Next Link
+  const NavItem = ({
+    link,
+    className,
+    mobile = false,
+  }: {
+    link: { name: string; href: string };
+    className: string;
+    mobile?: boolean;
+  }) => {
+    if (link.href.startsWith("#")) {
+      return (
+        <button
+          key={link.name}
+          onClick={() => scrollTo(link.href)}
+          className={className}
+          style={{ color: "var(--nav-text)" }}
+          {...(!mobile && {
+            onMouseEnter: (e) => {
+              (e.currentTarget as HTMLElement).style.background = "var(--nav-hover-bg)";
+              (e.currentTarget as HTMLElement).style.color = "var(--nav-hover-text)";
+            },
+            onMouseLeave: (e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "var(--nav-text)";
+            },
+          })}
+        >
+          {link.name}
+        </button>
+      );
+    }
+    return (
+      <Link
+        key={link.name}
+        href={link.href}
+        onClick={() => setIsMenuOpen(false)}
+        className={className}
+        style={{ color: "var(--nav-text)" }}
+        {...(!mobile && {
+          onMouseEnter: (e) => {
+            (e.currentTarget as HTMLElement).style.background = "var(--nav-hover-bg)";
+            (e.currentTarget as HTMLElement).style.color = "var(--nav-hover-text)";
+          },
+          onMouseLeave: (e) => {
+            (e.currentTarget as HTMLElement).style.background = "transparent";
+            (e.currentTarget as HTMLElement).style.color = "var(--nav-text)";
+          },
+        })}
+      >
+        {link.name}
+      </Link>
+    );
   };
 
   return (
@@ -115,22 +172,11 @@ export default function Header() {
           {/* Center: nav */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <button
+              <NavItem
                 key={link.name}
-                onClick={() => scrollTo(link.href)}
+                link={link}
                 className="px-4 py-1.5 text-sm font-medium rounded-lg transition-all"
-                style={{ color: "var(--nav-text)" }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "var(--nav-hover-bg)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--nav-hover-text)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                  (e.currentTarget as HTMLElement).style.color = "var(--nav-text)";
-                }}
-              >
-                {link.name}
-              </button>
+              />
             ))}
           </nav>
 
@@ -179,14 +225,12 @@ export default function Header() {
             >
               <div className="px-4 py-4 space-y-1">
                 {navLinks.map((link) => (
-                  <button
+                  <NavItem
                     key={link.name}
-                    onClick={() => scrollTo(link.href)}
+                    link={link}
+                    mobile
                     className="block w-full text-left px-4 py-2.5 text-sm font-medium rounded-lg transition-all"
-                    style={{ color: "var(--nav-text)" }}
-                  >
-                    {link.name}
-                  </button>
+                  />
                 ))}
                 <div className="pt-3 mt-3 flex gap-5" style={{ borderTop: "1px solid var(--border)" }}>
                   <a href="mailto:dudhagaradharm53@gmail.com" className="flex items-center gap-1.5 text-sm transition-colors" style={{ color: "var(--muted-foreground)" }}>
